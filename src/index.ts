@@ -1,71 +1,83 @@
 import { FileReader } from './readers/FileReader';
 import { RectangleFactory } from './factories/RectangleFactory';
 import { ConeFactory } from './factories/ConeFactory';
-import { RectangleService } from './services/RectangleService';
-import { ConeService } from './services/ConeService';
 import { Rectangle } from './entities/Rectangle';
-import { Cone } from './entities/Cone';
+import { Point } from './entities/Point';
 import logger from './utils/logger';
+import { Warehouse } from './store/Warehouse';
+import { ShapeRepository } from './repository/ShapeRepository';
+import { FirstQuadrantSpecification, AreaRangeSpecification } from './repository/specifications';
+import { ShapeXCoordinateComparator } from './repository/comparators';
 
 function main() {
   try {
     const rectangleFactory = new RectangleFactory();
     const coneFactory = new ConeFactory();
-
     const fileReader = new FileReader([rectangleFactory, coneFactory]);
 
-    const rectangles = fileReader.readShapesFromFile('data/rectangles.txt', 'Rectangle');
-    logger.info(`Loaded ${rectangles.length} rectangles`);
+    const warehouse = Warehouse.getInstance();
+    const repository = new ShapeRepository();
 
-    const rectangleService = new RectangleService();
-    rectangles.forEach((shape) => {
-      const rectangle = shape as Rectangle;
-      const characteristics = rectangleService.getCharacteristics(rectangle);
-
-      logger.info({
-        id: rectangle.id,
-        ...characteristics,
-      }, `Rectangle characteristics: ${rectangle.id}`);
-
-      console.log('\n=== Rectangle ===');
-      console.log(`ID: ${rectangle.id}`);
-      console.log(`Area: ${characteristics.area.toFixed(2)}`);
-      console.log(`Perimeter: ${characteristics.perimeter.toFixed(2)}`);
-      console.log(`Is Valid: ${characteristics.isValid}`);
-      console.log(`Is Convex: ${characteristics.isConvex}`);
-      console.log(`Is Square: ${characteristics.isSquare}`);
-      console.log(`Is Rhombus: ${characteristics.isRhombus}`);
-      console.log(`Is Trapezoid: ${characteristics.isTrapezoid}`);
-    });
-
+    const rectangles = fileReader.readShapesFromFile(
+      'data/rectangles.txt',
+      'Rectangle',
+    );
     const cones = fileReader.readShapesFromFile('data/cones.txt', 'Cone');
-    logger.info(`Loaded ${cones.length} cones`);
+    const allShapes = [...rectangles, ...cones];
 
-    const coneService = new ConeService();
-    cones.forEach((shape) => {
-      const cone = shape as Cone;
-      const characteristics = coneService.getCharacteristics(cone);
-
-      logger.info({
-        id: cone.id,
-        ...characteristics,
-      }, `Cone characteristics: ${cone.id}`);
-
-      console.log('\n=== Cone ===');
-      console.log(`ID: ${cone.id}`);
-      console.log(`Volume: ${characteristics.volume.toFixed(2)}`);
-      console.log(`Surface Area: ${characteristics.surfaceArea.toFixed(2)}`);
-      console.log(`Height: ${characteristics.height.toFixed(2)}`);
-      console.log(`Radius: ${characteristics.radius.toFixed(2)}`);
-      console.log(`Slant Height: ${characteristics.slantHeight.toFixed(2)}`);
-      console.log(`Is Valid: ${characteristics.isValid}`);
-      console.log(`Base on Plane: ${characteristics.baseOnPlane.isOnPlane}`);
-      if (characteristics.baseOnPlane.plane) {
-        console.log(`Plane: ${characteristics.baseOnPlane.plane}`);
-      }
+    allShapes.forEach((shape) => {
+      shape.attach(warehouse);
+      warehouse.initShape(shape);
+      repository.add(shape);
     });
 
-    logger.info('Application completed successfully');
+    logger.info('--- Query: Shapes in First Quadrant ---');
+    const firstQuadrantShapes = repository.query(
+      new FirstQuadrantSpecification(),
+    );
+    console.log(
+      'Shapes in 1st Quadrant:',
+      firstQuadrantShapes.map((s) => s.id),
+    );
+
+    logger.info('--- Query: Rectangles with Area between 10 and 20 ---');
+    const mediumAreaShapes = repository.query(
+      new AreaRangeSpecification(10, 20),
+    );
+    console.log(
+      'Shapes with area 10-20:',
+      mediumAreaShapes.map((s) => s.id),
+    );
+
+    logger.info('--- Sort: By X Coordinate ---');
+    const sortedShapes = repository.sort(new ShapeXCoordinateComparator());
+    console.log(
+      'Sorted by X:',
+      sortedShapes.map((s) => `${s.id} (x=${s.getPoints()[0].x})`),
+    );
+
+    const rect = repository.getById('rect1') as Rectangle;
+    if (rect) {
+      console.log(
+        `\n[Before Change] ID: ${rect.id}, Area in Warehouse: ${
+          warehouse.getMetrics(rect.id)?.area
+        }`,
+      );
+
+      logger.info('Changing rectangle coordinates...');
+      rect.setPoints(
+        new Point(0, 0),
+        new Point(10, 0),
+        new Point(10, 5),
+        new Point(0, 5),
+      );
+
+      console.log(
+        `[After Change] ID: ${rect.id}, Area in Warehouse: ${
+          warehouse.getMetrics(rect.id)?.area
+        }`,
+      );
+    }
   } catch (error) {
     logger.error({ err: error }, 'Application failed');
     process.exit(1);

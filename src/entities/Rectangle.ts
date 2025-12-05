@@ -2,14 +2,31 @@ import { Shape } from './Shape';
 import { Point } from './Point';
 
 export class Rectangle extends Shape {
+  private topLeft: Point;
+  private topRight: Point;
+  private bottomRight: Point;
+  private bottomLeft: Point;
+
   constructor(
     id: string,
-    private readonly topLeft: Point,
-    private readonly topRight: Point,
-    private readonly bottomRight: Point,
-    private readonly bottomLeft: Point,
+    topLeft: Point,
+    topRight: Point,
+    bottomRight: Point,
+    bottomLeft: Point,
   ) {
     super(id);
+    this.topLeft = topLeft;
+    this.topRight = topRight;
+    this.bottomRight = bottomRight;
+    this.bottomLeft = bottomLeft;
+  }
+
+  setPoints(topLeft: Point, topRight: Point, bottomRight: Point, bottomLeft: Point): void {
+    this.topLeft = topLeft;
+    this.topRight = topRight;
+    this.bottomRight = bottomRight;
+    this.bottomLeft = bottomLeft;
+    this.notify();
   }
 
   getType(): string {
@@ -20,21 +37,10 @@ export class Rectangle extends Shape {
     return [this.topLeft, this.topRight, this.bottomRight, this.bottomLeft];
   }
 
-  getTopLeft(): Point {
-    return this.topLeft;
-  }
-
-  getTopRight(): Point {
-    return this.topRight;
-  }
-
-  getBottomRight(): Point {
-    return this.bottomRight;
-  }
-
-  getBottomLeft(): Point {
-    return this.bottomLeft;
-  }
+  getTopLeft(): Point { return this.topLeft; }
+  getTopRight(): Point { return this.topRight; }
+  getBottomRight(): Point { return this.bottomRight; }
+  getBottomLeft(): Point { return this.bottomLeft; }
 
   getSides(): { top: number; right: number; bottom: number; left: number } {
     return {

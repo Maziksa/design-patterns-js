@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { ShapeFactory } from '../factories/ShapeFactory';
 import { Shape } from '../entities/Shape';
+import { ShapeFactory } from '../factories/ShapeFactory';
 import logger from '../utils/logger';
 
 export class FileReader {
@@ -14,14 +14,22 @@ export class FileReader {
     });
   }
 
-  readShapesFromFile(filePath: string, shapeType: string): Shape[] {
+  private getFactory(shapeType: string): ShapeFactory {
     const factory = this.factories.get(shapeType);
     if (!factory) {
       throw new Error(`No factory found for shape type: ${shapeType}`);
     }
+    return factory;
+  }
+
+  readShapesFromFile(filePath: string, shapeType: string): Shape[] {
+    const factory = this.getFactory(shapeType);
 
     const absolutePath = path.resolve(filePath);
-    logger.info({ filePath: absolutePath, shapeType }, 'Reading shapes from file');
+    logger.info(
+      { filePath: absolutePath, shapeType },
+      'Reading shapes from file',
+    );
 
     if (!fs.existsSync(absolutePath)) {
       logger.error({ filePath: absolutePath }, 'File not found');
@@ -45,20 +53,26 @@ export class FileReader {
         const shape = factory.create(data);
         shapes.push(shape);
       } catch (error) {
-        logger.error({
-          line: index + 1,
-          data: trimmedLine,
-          shapeType,
-          err: error,
-        }, 'Failed to create shape');
+        logger.error(
+          {
+            line: index + 1,
+            data: trimmedLine,
+            shapeType,
+            err: error,
+          },
+          'Failed to create shape',
+        );
       }
     });
 
-    logger.info({
-      filePath: absolutePath,
-      shapeType,
-      totalShapes: shapes.length,
-    }, `Successfully loaded ${shapes.length} shapes`);
+    logger.info(
+      {
+        filePath: absolutePath,
+        shapeType,
+        totalShapes: shapes.length,
+      },
+      `Successfully loaded ${shapes.length} shapes`,
+    );
 
     return shapes;
   }
