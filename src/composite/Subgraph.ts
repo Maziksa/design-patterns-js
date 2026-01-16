@@ -1,4 +1,5 @@
 import { GraphComponent } from './GraphComponent';
+import { IGraphStorage } from '../bridge/IGraphStorage';
 
 export class Subgraph implements GraphComponent {
   private components: GraphComponent[] = [];
@@ -14,7 +15,7 @@ export class Subgraph implements GraphComponent {
     this.components.forEach((c) => c.display(indent + 2));
   }
 
-  collectVertices(): string[] {
-    return this.components.flatMap((c) => c.collectVertices());
+  applyToStorage(storage: IGraphStorage): void {
+    this.components.forEach((c) => c.applyToStorage(storage));
   }
 }

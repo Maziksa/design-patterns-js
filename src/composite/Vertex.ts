@@ -1,4 +1,5 @@
 import { GraphComponent } from './GraphComponent';
+import { IGraphStorage } from '../bridge/IGraphStorage';
 
 export class Vertex implements GraphComponent {
   constructor(private id: string) {}
@@ -7,7 +8,7 @@ export class Vertex implements GraphComponent {
     console.log(`${' '.repeat(indent)}• Vertex: ${this.id}`);
   }
 
-  collectVertices(): string[] {
-    return [this.id];
+  applyToStorage(storage: IGraphStorage): void {
+    storage.addVertex(this.id);
   }
 }

@@ -11,16 +11,12 @@ export class Graph {
 
   public addNode(component: GraphComponent): void {
     this.root.add(component);
-    const ids = component.collectVertices();
-    ids.forEach((id) => this.storage.addVertex(id));
     
-    if (component.applyToStorage) {
-      component.applyToStorage(this.storage);
-    }
+    component.applyToStorage(this.storage);
   }
 
-  public connect(id1: string, id2: string): void {
-    this.storage.addEdge(id1, id2);
+  public connect(id1: string, id2: string, weight: number = 1): void {
+    this.storage.addEdge(id1, id2, weight, true);
   }
 
   public render(): void {

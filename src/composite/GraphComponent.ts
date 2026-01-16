@@ -1,6 +1,6 @@
+import { IGraphStorage } from '../bridge/IGraphStorage';
+
 export interface GraphComponent {
   display(indent?: number): void;
-  collectVertices(): string[];
-  
-  applyToStorage?(storage: any): void;
+  applyToStorage(storage: IGraphStorage): void;
 }
