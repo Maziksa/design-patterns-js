@@ -1,35 +1,17 @@
 {
-  "name": "design-patterns-shapes",
+  "name": "design-patterns",
   "version": "1.0.0",
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc",
-    "start": "npm run build && node dist/index.js",
-    "dev": "ts-node src/index.ts",
-    "test": "jest",
-    "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage",
-    "lint": "eslint src/**/*.ts",
-    "lint:fix": "eslint src/**/*.ts --fix"
+    "start": "npm run build && node dist/index.js"
   },
   "keywords": ["design-patterns", "solid", "grasp", "typescript"],
   "author": "",
   "license": "MIT",
   "devDependencies": {
-    "@types/jest": "^30.0.0",
     "@types/node": "^24.10.1",
-    "@typescript-eslint/eslint-plugin": "^6.21.0",
-    "@typescript-eslint/parser": "^6.21.0",
-    "eslint": "^8.57.1",
-    "eslint-config-airbnb-base": "^15.0.0",
-    "eslint-plugin-import": "^2.32.0",
-    "jest": "^30.2.0",
-    "ts-jest": "^29.4.5",
-    "ts-node": "^10.9.2",
+    "pino-pretty": "^13.1.2",
     "typescript": "^5.9.3"
-  },
-  "dependencies": {
-    "pino": "^10.1.0",
-    "pino-pretty": "^13.1.2"
   }
 }
