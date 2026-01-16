@@ -12,13 +12,13 @@ export class Edge implements GraphComponent {
   display(indent: number = 0): void {
     const arrow = this.directed ? '→' : '↔';
     const weightInfo = this.weight !== undefined ? ` (weight: ${this.weight})` : '';
-    console.log(`${' '.repeat(indent)}🔗 Edge: ${this.sourceId} ${arrow} ${this.targetId}${weightInfo}`);
+    console.log(`${' '.repeat(indent)} Edge: ${this.sourceId} ${arrow} ${this.targetId}${weightInfo}`);
   }
 
   collectVertices(): string[] {
     return [this.sourceId, this.targetId];
   }
-  
+
   applyToStorage(storage: IGraphStorage): void {
     storage.addEdge(this.sourceId, this.targetId);
   }

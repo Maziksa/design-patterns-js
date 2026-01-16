@@ -10,7 +10,7 @@ export class Subgraph implements GraphComponent {
   }
 
   display(indent: number = 0): void {
-    console.log(`${' '.repeat(indent)}📂 Group: ${this.name}`);
+    console.log(`${' '.repeat(indent)} Group: ${this.name}`);
     this.components.forEach((c) => c.display(indent + 2));
   }
 
